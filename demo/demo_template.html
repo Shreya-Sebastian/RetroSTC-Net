@@ -1,0 +1,283 @@
+<title>RetroSTC-Net Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F4F6F8; --paper:#FFFFFF; --ink:#16202C; --muted:#5A6573; --rule:#D8DEE6; --soft:#EAEEF2;
+  --tag:#12906A; --tag-soft:#DDF3EA; --prp:#B42E86; --prp-soft:#F7E1EF; --late:#2B4C8C; --late-soft:#E1E8F5; --gray:#8A94A3;
+  --display:"Schibsted Grotesk","Helvetica Neue",Arial,sans-serif;
+  --body:"Source Serif 4",Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){color-scheme:dark;
+    --bg:#0E131A; --paper:#151C25; --ink:#E4E9EF; --muted:#9AA6B4; --rule:#2A3441; --soft:#1C2530;
+    --tag:#45CFA0; --tag-soft:#16352B; --prp:#E672BF; --prp-soft:#3A1C30; --late:#8FB0F0; --late-soft:#1D2A44; --gray:#7C8795;}
+}
+:root[data-theme="dark"]{color-scheme:dark;
+  --bg:#0E131A; --paper:#151C25; --ink:#E4E9EF; --muted:#9AA6B4; --rule:#2A3441; --soft:#1C2530;
+  --tag:#45CFA0; --tag-soft:#16352B; --prp:#E672BF; --prp-soft:#3A1C30; --late:#8FB0F0; --late-soft:#1D2A44; --gray:#7C8795;}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:980px;margin:0 auto}
+header{padding-block:44px 22px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,5vw,46px);line-height:1.05;letter-spacing:-.02em;margin:.3em 0 .35em;text-wrap:balance}
+h1 .t{color:var(--tag)} h1 .p{color:var(--prp)}
+.lede{max-width:66ch;margin:0;font-size:18.5px}
+h2{font-family:var(--display);font-weight:700;font-size:clamp(22px,3vw,27px);letter-spacing:-.01em;margin:52px 0 8px;text-wrap:balance}
+p{max-width:68ch;margin:0 0 12px}
+.panel{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:18px}
+.lab{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:18px;margin-top:14px}
+@media (max-width:780px){.lab{grid-template-columns:minmax(0,1fr)}}
+.ctrl{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-bottom:12px;font-family:var(--mono);font-size:13.5px}
+.ctrl label{color:var(--muted)}
+.ctrl input[type=range]{flex:1;min-width:180px;accent-color:var(--prp)}
+.ctrl output{font-weight:500;min-width:92px}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.seg button{font-family:var(--mono);font-size:12.5px;border:0;background:transparent;color:var(--muted);padding:6px 11px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--soft);color:var(--ink)}
+.chart{position:relative;height:260px}
+.chart.sm{height:220px}
+.big{font-family:var(--display);font-weight:800;font-size:44px;line-height:1;color:var(--tag)}
+.stat{display:grid;gap:14px}
+.stat div{border-bottom:1px solid var(--rule);padding-bottom:12px}
+.stat .k{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.stat .v{font-family:var(--display);font-weight:700;font-size:26px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-family:var(--mono);font-size:12px;color:var(--muted);margin:4px 0 8px}
+.legend i{display:inline-block;width:18px;height:0;border-top:3px solid;vertical-align:middle;margin-right:6px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:14px}
+.record{font-family:var(--mono);font-size:14px;line-height:1.55}
+.record .row{display:flex;justify-content:space-between;gap:12px;border-bottom:1px dashed var(--rule);padding:6px 0}
+.record .row span:first-child{color:var(--muted)}
+.feat{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.feat canvas{width:100%;aspect-ratio:1;border-radius:4px;image-rendering:pixelated;background:var(--soft)}
+.flab{font-family:var(--mono);font-size:12px;color:var(--muted);margin:8px 0 4px}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-family:var(--display);font-size:13.5px;background:var(--soft)}
+.tbl{overflow-x:auto;border:1px solid var(--rule);border-radius:8px;background:var(--paper)}
+.note{font-size:14.5px;color:var(--muted);font-style:italic}
+.num{font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:14px}
+footer{margin-top:52px;padding-top:16px;border-top:1px solid var(--rule);font-size:14px;color:var(--muted)}
+:focus-visible{outline:2px solid var(--prp);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">RetroSTC-Net · interactive lab · synaptic tagging and capture in a neural network</div>
+  <h1>Can a <span class="p">later event</span> decide what a network <span class="t">remembers</span>?</h1>
+  <p class="lede">In the brain, a fresh memory is fragile. It leaves a temporary tag, and it becomes permanent only if a salient event supplies plasticity-related products while the tag is still there. This lab shows the same mechanism working inside a neural network trained with backpropagation, using results from real training runs.</p>
+</header>
+
+<section aria-labelledby="h-lab">
+<h2 id="h-lab">1. Move the salient event</h2>
+<p>A network learns a hard digit task (3 vs 5) weakly, for 60 steps. One salient event happens somewhere in time. After a long delay, only what was consolidated is left. Slide the event and watch the tag, the plasticity-related products and the capture.</p>
+<div class="lab">
+  <div class="panel">
+    <div class="ctrl">
+      <label for="delta">Event time</label>
+      <input id="delta" type="range" min="-450" max="600" step="75" value="0" aria-describedby="deltaOut">
+      <output id="deltaOut" for="delta">at end of A</output>
+    </div>
+    <div class="legend"><span><i style="border-color:var(--late)"></i>task A training</span><span><i style="border-color:var(--tag)"></i>tag</span><span><i style="border-color:var(--prp)"></i>PRPs</span><span><i style="border-color:var(--ink);border-top-style:dashed"></i>consolidated</span></div>
+    <div class="chart"><canvas id="timeline" role="img" aria-label="Timeline of tag, PRP level and consolidation for the chosen event time"></canvas></div>
+  </div>
+  <div class="panel stat" aria-live="polite">
+    <div><div class="k">Share of task A made permanent</div><div class="big" id="kept">91%</div></div>
+    <div><div class="k">Task A accuracy after the delay</div><div class="v num" id="accA">0.96</div></div>
+    <div><div class="k">Without any event</div><div class="v num" id="accNone">0.49</div></div>
+    <p class="note" id="explain">The event arrives while the tag is still set, so most of task A is captured.</p>
+  </div>
+</div>
+<div class="panel" style="margin-top:18px">
+  <div class="legend"><span><i style="border-color:var(--tag)"></i>tags + shared PRPs</span><span><i style="border-color:var(--gray);border-top-style:dashed"></i>no tags</span><span><i style="border-color:var(--prp);border-top-style:dotted"></i>PRPs per synapse</span></div>
+  <div class="chart sm"><canvas id="windowChart" role="img" aria-label="Measured share of task A consolidated as a function of event time, for three model variants"></canvas></div>
+  <p class="note">Measured over 5 training runs each. Without tags there is no time limit after learning. With PRPs made only at tagged synapses, an event before learning cannot help.</p>
+</div>
+</section>
+
+<section aria-labelledby="h-cross">
+<h2 id="h-cross">2. A new, surprising task rescues an older one</h2>
+<p>Now the salient event is the start of a new task B. Its onset rescues task A retroactively, but only while A's tags last. If tags belong to the weight, B's own learning re-tags the same weights and rescues A far too late. If tags belong to the change, the window is clean.</p>
+<div class="panel" style="margin-top:14px">
+  <div class="legend"><span><i style="border-color:var(--tag)"></i>tags bound to the change</span><span><i style="border-color:var(--gray);border-top-style:dashed"></i>tags bound to the weight</span></div>
+  <div class="chart sm"><canvas id="crossChart" role="img" aria-label="Share of task A consolidated by the onset of task B, as a function of the gap between A and B"></canvas></div>
+</div>
+</section>
+
+<section aria-labelledby="h-why">
+<h2 id="h-why">3. Why does it remember? The network's own record</h2>
+<p>Every capture is logged: which event supplied the products, and whose learning was captured. That record is an explanation of the network's memory. The chart tests whether it is true: resetting the weights the log names should remove that memory, and only that memory.</p>
+<div class="grid2">
+  <div class="panel">
+    <div class="flab">Memory provenance record</div>
+    <div class="record" id="record"></div>
+  </div>
+  <div class="panel">
+    <div class="ctrl"><span class="seg" role="group" aria-label="Show accuracy on"><button type="button" id="showA" aria-pressed="true">Task A</button><button type="button" id="showB" aria-pressed="false">Task B</button></span></div>
+    <div class="legend"><span><i style="border-color:var(--tag)"></i>log: A</span><span><i style="border-color:var(--prp)"></i>log: B</span><span><i style="border-color:var(--tag);border-top-style:dashed"></i>Fisher: A</span><span><i style="border-color:var(--prp);border-top-style:dashed"></i>Fisher: B</span><span><i style="border-color:var(--gray);border-top-style:dotted"></i>random</span></div>
+    <div class="chart sm"><canvas id="faithChart" role="img" aria-label="Accuracy after resetting the top-ranked parameters, for rankings from the consolidation log, Fisher importance and random"></canvas></div>
+  </div>
+</div>
+<div class="panel" style="margin-top:18px">
+  <div class="flab">What task A left in the first layer (pixel weights of hidden units, green positive, pink negative)</div>
+  <div class="flab">Kept: consolidated</div><div class="feat" id="kept-grid"></div>
+  <div class="flab">Faded: not consolidated</div><div class="feat" id="lost-grid"></div>
+</div>
+</section>
+
+<section aria-labelledby="h-cl">
+<h2 id="h-cl">4. Does it prevent forgetting?</h2>
+<p>On Split-MNIST, a standard benchmark of five digit tasks in a row, consolidation alone does not stop forgetting: consolidated weights are not protected from later learning. Using the consolidation record as the importance signal for protecting weights helps about as much as Elastic Weight Consolidation, though less than Synaptic Intelligence. The difference is that importance is chosen by salient moments after the fact, not fixed at the time of learning. When each task has its own output head, every method is close to the ceiling.</p>
+<div class="tbl" style="margin-top:14px"><table id="clTable"><thead><tr><th>Method</th><th>Task-incremental</th><th>Domain-incremental</th></tr></thead><tbody></tbody></table></div>
+<p class="note" style="margin-top:8px">Average final accuracy over all five tasks, mean of 5 runs. Hyperparameters chosen on a separate run.</p>
+</section>
+
+<section aria-labelledby="h-map">
+<h2 id="h-map">Brain and network, side by side</h2>
+<div class="tbl"><table>
+<thead><tr><th>In the brain</th><th>In this network</th></tr></thead>
+<tbody>
+<tr><td>Early-phase LTP: a fragile change that fades within hours</td><td>A labile weight component that decays with time constant τE</td></tr>
+<tr><td>Late-phase LTP: a lasting change</td><td>A consolidated weight component</td></tr>
+<tr><td>Synaptic tag</td><td>A trace of each weight's recent updates, fading with τh</td></tr>
+<tr><td>Plasticity-related products, shared across a neuron</td><td>A resource per hidden unit, fading with τp, shared by its incoming weights</td></tr>
+<tr><td>Novelty or reward</td><td>A salience signal: a pulse, or a sudden jump in training loss</td></tr>
+</tbody></table></div>
+<p style="margin-top:14px"><strong>Where the analogy breaks.</strong> Backpropagation is not how neurons learn. Time here is counted in training steps, not hours. Plasticity-related products are a single number per unit, not proteins. A hidden unit is not a neuron.</p>
+</section>
+
+<footer>RetroSTC-Net. MNIST data; small multilayer perceptrons in PyTorch; all numbers from logged training runs.</footer>
+</div>
+
+<script>/*DATA*/</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+(function(){
+const D = window.STC_DATA;
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const C = {tag:css('--tag'), prp:css('--prp'), late:css('--late'), gray:css('--gray'), ink:css('--ink'), muted:css('--muted'), rule:css('--rule')};
+Chart.defaults.color = C.muted; Chart.defaults.borderColor = C.rule; Chart.defaults.font.family = "'IBM Plex Mono', monospace"; Chart.defaults.font.size = 11;
+const base = {responsive:true, maintainAspectRatio:false, animation:{duration: matchMedia('(prefers-reduced-motion: reduce)').matches?0:250}, plugins:{legend:{display:false}, tooltip:{intersect:false, mode:'index'}}, elements:{point:{radius:0}}};
+
+/* 1. timeline: same equations as the model, for the mean tag of task A's synapses */
+const tauE=1000, tauH=150, tauP=80, kappa=0.05, PRE=500, NA=60, T=1500;
+function simulate(delta){
+  const tEnd = PRE + NA, tEv = tEnd + delta;
+  let h=0, p=0, E=0, L=0; const tag=[], prp=[], cons=[], train=[];
+  for(let t=0;t<T;t++){
+    const learning = t>=PRE && t<tEnd;
+    E*=Math.exp(-1/tauE); h*=Math.exp(-1/tauH); p*=Math.exp(-1/tauP);
+    if(learning){ E+=1/NA; h+=1/NA*0.35; }
+    if(t===tEv) p+=1;
+    const tagged = h>0.02 ? 1 : 0;
+    const c = Math.min(1, kappa*p*tagged); L+=c*E; E-=c*E;
+    tag.push(h); prp.push(p); cons.push(L); train.push(learning?1:0);
+  }
+  return {tag, prp, cons, train};
+}
+const labels = Array.from({length:T},(_,i)=>i-(PRE+NA));
+const xy = arr => arr.map((v,i)=>({x:labels[i], y:v}));
+const tl = new Chart(document.getElementById('timeline'), {type:'line', data:{datasets:[
+  {label:'task A training', data:[], borderColor:C.late, backgroundColor:C.late+'33', fill:true, borderWidth:0, stepped:true},
+  {label:'tag', data:[], borderColor:C.tag, borderWidth:2},
+  {label:'PRPs', data:[], borderColor:C.prp, borderWidth:2},
+  {label:'consolidated', data:[], borderColor:C.ink, borderDash:[6,4], borderWidth:2}]},
+  options:{...base, parsing:true, scales:{x:{type:'linear', min:-560, max:940, ticks:{stepSize:150}, title:{display:true,text:'steps relative to end of task A'}}, y:{min:0,max:1.05, title:{display:true,text:'relative level'}}}}});
+
+const W = D.window;
+function nearest(arr, v){let b=0;for(let i=0;i<arr.length;i++) if(Math.abs(arr[i]-v)<Math.abs(arr[b]-v)) b=i; return b;}
+const slider = document.getElementById('delta'), out = document.getElementById('deltaOut');
+function update(){
+  const d = +slider.value;
+  const s = simulate(d);
+  const hmax = Math.max(...s.tag)||1;
+  tl.data.datasets[0].data = xy(s.train.map(v=>v*1.05));
+  tl.data.datasets[1].data = xy(s.tag.map(v=>v/hmax));
+  tl.data.datasets[2].data = xy(s.prp);
+  tl.data.datasets[3].data = xy(s.cons);
+  tl.update();
+  const txt = d===0 ? 'at end of A' : (d<0 ? `${-d} steps before end of A` : `${d} steps after A`);
+  out.value = txt; slider.setAttribute('aria-valuetext', txt);
+  const i = nearest(W.delta, d);
+  document.getElementById('kept').textContent = Math.round(W.stc[i]*100)+'%';
+  document.getElementById('accA').textContent = W.acc[i].toFixed(2);
+  const k = W.stc[i];
+  document.getElementById('explain').textContent =
+    k>0.6 ? 'Tag and products overlap, so most of task A is captured and survives the delay.' :
+    k>0.2 ? 'Tag and products only partly overlap, so part of task A is captured.' :
+    (d<0 ? 'The products have faded before task A is learned, so nothing is captured.' : 'The tag has faded by the time the event arrives, so task A is lost.');
+  wc.data.datasets[3].data = W.delta.map((x,j)=> j===i ? W.stc[j] : null);
+  wc.update('none');
+}
+document.getElementById('accNone').textContent = W.acc_none.toFixed(2);
+
+const wc = new Chart(document.getElementById('windowChart'), {type:'line', data:{labels:W.delta, datasets:[
+  {data:W.stc, borderColor:C.tag, borderWidth:2.5, pointRadius:3, pointBackgroundColor:C.tag},
+  {data:W.no_tags, borderColor:C.gray, borderDash:[6,4], borderWidth:2},
+  {data:W.per_synapse, borderColor:C.prp, borderDash:[2,3], borderWidth:2},
+  {data:[], borderColor:'transparent', pointRadius:7, pointBackgroundColor:C.prp, showLine:false}]},
+  options:{...base, plugins:{legend:{display:false}, tooltip:{enabled:false}}, scales:{x:{title:{display:true,text:'event time relative to end of task A (steps)'}}, y:{min:0,max:1, title:{display:true,text:'share consolidated'}}}}});
+slider.addEventListener('input', update);
+update();
+
+/* 2. cross */
+const X = D.cross;
+new Chart(document.getElementById('crossChart'), {type:'line', data:{labels:X.gap, datasets:[
+  {data:X.change, borderColor:C.tag, borderWidth:2.5, pointRadius:3, pointBackgroundColor:C.tag},
+  {data:X.weight, borderColor:C.gray, borderDash:[6,4], borderWidth:2, pointRadius:3, pointBackgroundColor:C.gray}]},
+  options:{...base, scales:{x:{title:{display:true,text:'gap between task A and the start of task B (steps)'}}, y:{min:0,max:1,title:{display:true,text:'share of A consolidated'}}}}});
+
+/* 3. provenance, faithfulness, features */
+const rec = document.getElementById('record');
+const rows = [];
+D.provenance.forEach(p=>{
+  rows.push(['Event', p.event]);
+  rows.push(['Captured learning from', 'task '+p.source]);
+  rows.push(['Share made permanent', Math.round(p.fraction*100)+'%']);
+  rows.push(['Strongest hidden units', p.top_hidden_units.slice(0,4).join(', ')]);
+});
+rec.innerHTML = rows.map(r=>`<div class="row"><span>${r[0]}</span><span>${r[1]}</span></div>`).join('');
+
+const lv = D.levels.map(v=>(v*100)+'%');
+const fset = key => [
+  {data:D[key].log_A, borderColor:C.tag, borderWidth:2.5},
+  {data:D[key].log_B, borderColor:C.prp, borderWidth:2.5},
+  {data:D[key].fisher_A, borderColor:C.tag, borderDash:[6,4], borderWidth:2},
+  {data:D[key].fisher_B, borderColor:C.prp, borderDash:[6,4], borderWidth:2},
+  {data:D[key].random, borderColor:C.gray, borderDash:[2,3], borderWidth:2}];
+const fc = new Chart(document.getElementById('faithChart'), {type:'line', data:{labels:lv, datasets:fset('faith')},
+  options:{...base, scales:{x:{title:{display:true,text:'parameters reset to pre-learning values'}}, y:{min:0.5,max:1,title:{display:true,text:'accuracy'}}}}});
+const bA=document.getElementById('showA'), bB=document.getElementById('showB');
+function show(k){ fc.data.datasets = fset(k); fc.update(); bA.setAttribute('aria-pressed', k==='faith'); bB.setAttribute('aria-pressed', k==='faithB'); }
+bA.addEventListener('click',()=>show('faith')); bB.addEventListener('click',()=>show('faithB'));
+
+function draw(id, imgs){
+  const g = document.getElementById(id);
+  imgs.forEach(img=>{
+    const c = document.createElement('canvas'); c.width=28; c.height=28; c.setAttribute('aria-hidden','true');
+    const x = c.getContext('2d'); const im = x.createImageData(28,28);
+    let m=0; img.forEach(r=>r.forEach(v=>m=Math.max(m,Math.abs(v)))); m=m||1;
+    const pos=[18,144,106], neg=[180,46,134], bg=[234,238,242];
+    for(let i=0;i<28;i++) for(let j=0;j<28;j++){
+      const v = img[i][j]/m, t=Math.min(1,Math.abs(v)), col = v>0?pos:neg, k=(i*28+j)*4;
+      for(let n=0;n<3;n++) im.data[k+n] = Math.round(bg[n]+(col[n]-bg[n])*t);
+      im.data[k+3]=255;
+    }
+    x.putImageData(im,0,0); g.appendChild(c);
+  });
+}
+draw('kept-grid', D.features.kept); draw('lost-grid', D.features.lost);
+
+/* 4. split-MNIST table */
+const names = {plain:'Plain training', ewc:'EWC', si:'Synaptic Intelligence', stc_oracle:'STC, event at each task start', stc_surprise:'STC, surprise-gated', stc_anchor:'STC record as importance, surprise-gated'};
+const tb = document.querySelector('#clTable tbody');
+Object.entries(names).forEach(([k,n])=>{
+  const r = D.splitmnist[k]; if(!r) return;
+  tb.insertAdjacentHTML('beforeend', `<tr><td>${n}</td><td class="num">${r.task.toFixed(3)}</td><td class="num">${r.domain.toFixed(3)}</td></tr>`);
+});
+})();
+</script>
