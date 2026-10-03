@@ -28,7 +28,7 @@ Size-triggered capture without any event: 0.62.
 
 B not salient: share A 0.00, acc A 0.593, acc B 0.516. Task B accuracy with salient onset: 0.972.
 
-## E3: faithfulness (deletion test, 5 seeds)
+## E3: deletion test (5 seeds)
 
 | ranking | reset 1%: acc A / acc B | reset 5%: acc A / acc B |
 |---|---|---|
@@ -36,6 +36,8 @@ B not salient: share A 0.00, acc A 0.593, acc B 0.516. Task B accuracy with sali
 | log_B | 0.940 / 0.828 | 0.951 / 0.691 |
 | fisher_A | 0.927 / 0.965 | 0.902 / 0.950 |
 | fisher_B | 0.911 / 0.961 | 0.946 / 0.929 |
+| change_A | 0.842 / 0.968 | 0.796 / 0.964 |
+| change_B | 0.934 / 0.870 | 0.948 / 0.764 |
 | random | 0.873 / 0.972 | 0.876 / 0.971 |
 | none | 0.872 / 0.971 | |
 
@@ -48,7 +50,7 @@ Provenance log, seed 0:
 - event 'B onset' consolidated 63% of source 'B' (total change 274.47); strongest hidden units [135, 132, 200, 211, 181]
 - event 'B onset' consolidated 85% of source 'A' (total change 223.65); strongest hidden units [131, 52, 200, 214, 233]
 
-## E4: Split-MNIST (5 tasks, 5 seeds, average final accuracy)
+## E4: Split-MNIST (5 tasks, 5 seeds, average final accuracy, mean ± SD across seeds)
 
 | method | task-incremental | domain-incremental |
 |---|---|---|

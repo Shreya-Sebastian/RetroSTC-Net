@@ -68,9 +68,9 @@ if e1:
 
     fig, axes = plt.subplots(1, 2, figsize=(10.5, 3.4), sharey=True)
     for ax, names, title in [(axes[0], [("tau_h_75", "τh = 75"), ("full", "τh = 150"), ("tau_h_300", "τh = 300")],
-                              "Tag lifetime τh sets how long AFTER learning an event still works"),
+                              "Tag lifetime τh mainly sets how long AFTER learning an event still works"),
                              (axes[1], [("tau_p_40", "τp = 40"), ("full", "τp = 80"), ("tau_p_160", "τp = 160")],
-                              "PRP lifetime τp sets how long BEFORE learning an event still works")]:
+                              "PRP lifetime τp mainly sets how long BEFORE learning an event still works")]:
         shades = ["#9FD8C3", TAG, "#0B5A43"] if "tau_h" in names[0][0] else ["#E8A9D1", PRP, "#6E1A52"]
         for (n, lab), c in zip(names, shades):
             x, m, _ = agg(e1[n], "frac_A", "delta")
@@ -140,6 +140,7 @@ if e3:
     fig, axes = plt.subplots(1, 2, figsize=(10.5, 3.6), sharey=True)
     styles = {"log_A": (TAG, "-", "Consolidation log: task A"), "log_B": (PRP, "-", "Consolidation log: task B"),
               "fisher_A": (TAG, "--", "Fisher importance: task A"), "fisher_B": (PRP, "--", "Fisher importance: task B"),
+              "change_A": (TAG, "-.", "Change size: task A"), "change_B": (PRP, "-.", "Change size: task B"),
               "random": (GRAY, ":", "Random")}
     for ax, key, title in [(axes[0], "acc_A", "Accuracy on task A"), (axes[1], "acc_B", "Accuracy on task B")]:
         for rk, (c, ls, lab) in styles.items():
@@ -150,13 +151,13 @@ if e3:
         ax.set_xlabel("Parameters reset to their pre-learning value (%)")
     axes[0].set_ylabel("Test accuracy")
     axes[1].legend(fontsize=8.5, loc="lower left")
-    fig.suptitle("E3  Faithfulness: resetting the weights the log names removes that memory, and only that memory",
+    fig.suptitle("E3  Deletion test: resetting the weights the log attributes to a task lowers accuracy on that task and spares the other",
                  x=0.01, ha="left", fontsize=11.5)
     fig.savefig(os.path.join(FIG, "fig4_faithfulness.png")); plt.close(fig)
 
     def at(rk, lv, key):
         return st.mean(r[key] for r in rows if r["ranking"] == rk and abs(r["level"] - lv) < 1e-9)
-    summary += ["## E3: faithfulness (deletion test, 5 seeds)", "",
+    summary += ["## E3: deletion test (5 seeds)", "",
                 "| ranking | reset 1%: acc A / acc B | reset 5%: acc A / acc B |", "|---|---|---|"]
     for rk in styles:
         summary.append(f"| {rk} | {at(rk,0.01,'acc_A'):.3f} / {at(rk,0.01,'acc_B'):.3f} | {at(rk,0.05,'acc_A'):.3f} / {at(rk,0.05,'acc_B'):.3f} |")
@@ -204,7 +205,7 @@ if e4:
                ("stc_surprise", "STC, surprise-gated", TAG),
                ("stc_anchor", "STC log as importance", LATE)]
     fig, axes = plt.subplots(1, 2, figsize=(10.5, 3.6))
-    summary += ["## E4: Split-MNIST (5 tasks, 5 seeds, average final accuracy)", "",
+    summary += ["## E4: Split-MNIST (5 tasks, 5 seeds, average final accuracy, mean ± SD across seeds)", "",
                 "| method | task-incremental | domain-incremental |", "|---|---|---|"]
     table = {}
     for ax, sc, title in [(axes[0], "task", "Task-incremental (one head per task)"),
@@ -221,7 +222,7 @@ if e4:
         lo = np.nanmin(ms)
         ax.set_ylim(max(0, lo - 0.1), 1.0)
     axes[0].set_ylabel("Average accuracy on all 5 tasks")
-    fig.suptitle("E4  Split-MNIST: STC alone barely reduces forgetting; its log as importance matches EWC, not SI",
+    fig.suptitle("E4  Split-MNIST: STC alone does not measurably reduce forgetting; its log as importance matches EWC, not SI",
                  x=0.01, ha="left", fontsize=11.5)
     fig.savefig(os.path.join(FIG, "fig6_splitmnist.png")); plt.close(fig)
     for m, lab, _ in methods:

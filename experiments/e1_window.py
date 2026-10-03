@@ -1,6 +1,6 @@
-"""E1 + E2: the behavioural-tagging window and its ablations.
+"""Experiment 1: the behavioural-tagging window and its ablations.
 
-Weak training on task A, one salience pulse at offset delta from the end of A,
+Brief (60-step) training on task A, one salience pulse at offset delta from the end of A,
 test after a long delay. Retention = share of A's learning that became permanent
 (consolidated fraction) and test accuracy on A.
 """

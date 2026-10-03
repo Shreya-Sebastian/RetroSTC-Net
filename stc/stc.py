@@ -12,15 +12,17 @@ dynamics:
     L  += c * E_k ;  E_k -= c * E_k                early -> late
     w   =  L + sum_k E_k                           effective weight
 
-Sources k are learning episodes (e.g. task A, task B). Tracking E per source makes
-provenance exact: every consolidated change is attributed to the episode that
-produced it and to the salience event whose PRPs captured it.
+Sources k are learning episodes (e.g. task A, task B), labelled by the caller.
+Tracking E per source makes attribution to episodes exact. Captures are labelled
+with the most recent salience event, which is exact only when events do not
+overlap within the PRP lifetime.
 
 tag_binding="weight": one tag per weight (sum over sources). A weight tagged by
     any episode captures all early change it holds, whichever episode made it.
 tag_binding="change": each episode's early change carries its own tag, so it is
     captured only while its own tag is set.
-prp_mode="unit": PRPs are shared by all incoming weights of a unit.
+prp_mode="unit": PRPs are shared by all incoming weights of a unit. Every unit
+    receives the same pulse, so in effect PRPs are one global signal.
 prp_mode="weight": PRPs are made only at synapses tagged at event time.
 """
 from __future__ import annotations

@@ -1,11 +1,12 @@
-"""E3: consolidation as explanation.
+"""Experiment 3: deletion test of the consolidation log.
 
 Cross-task protocol (A, short gap, salient B, long delay). For each run we read
 the memory provenance log and test whether it is faithful:
 
 Deletion test. Rank all parameters by (a) the change the log says was
 consolidated from A, (b) the same for B, (c) diagonal Fisher information for A,
-(d) Fisher for B, (e) random. Reset the top-k% to their values before any
+(d) Fisher for B, (e) the total change each task made to each weight (change_A,
+change_B; no consolidation information), (f) random. Reset the top-k% to their values before any
 learning and measure accuracy on A and B. A faithful log should identify the
 weights that hold each memory at least as well as Fisher, and dissociate A from B.
 """
@@ -82,12 +83,14 @@ for seed in range(5):
     zero = {n: torch.zeros_like(p) for n, p in model.named_parameters()}
     s_log_a = flat({**zero, **{k: v.abs() for k, v in cons_a.items()}}, names)
     s_log_b = flat({**zero, **{k: v.abs() for k, v in cons_b.items()}}, names)
+    s_ch_a = flat({**zero, **{k: v.abs() for k, v in con.produced["A"].items()}}, names)
+    s_ch_b = flat({**zero, **{k: v.abs() for k, v in con.produced["B"].items()}}, names)
     torch.manual_seed(1000 + seed)
     s_f_a = flat(fisher(model, TASK_A, 0), names)
     s_f_b = flat(fisher(model, TASK_B, 1), names)
     rng = np.random.default_rng(seed)
     for label, sc in [("log_A", s_log_a), ("log_B", s_log_b), ("fisher_A", s_f_a),
-                      ("fisher_B", s_f_b), ("random", None)]:
+                      ("fisher_B", s_f_b), ("change_A", s_ch_a), ("change_B", s_ch_b), ("random", None)]:
         for row in deletion(model, before, sc, names, LEVELS, rng):
             results["deletion"].append({"seed": seed, "ranking": label, **row})
     for row in con.provenance():

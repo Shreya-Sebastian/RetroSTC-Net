@@ -1,6 +1,6 @@
-"""E2b: cross-task rescue and selectivity under interference.
+"""Experiment 2: cross-task rescue and selectivity under interference.
 
-Weak training on task A, an idle gap, then a novel task B whose onset is salient.
+Brief (60-step) training on task A, an idle gap, then a novel task B whose onset is salient.
 Does B's salience rescue A retroactively, and does the rescue still depend on
 the gap when B's own learning also sets tags?
 """

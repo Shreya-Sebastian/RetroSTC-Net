@@ -1,3 +1,8 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>RetroSTC-Net Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,13 +16,10 @@
   --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){color-scheme:dark;
+  :root{color-scheme:dark;
     --bg:#0E131A; --paper:#151C25; --ink:#E4E9EF; --muted:#9AA6B4; --rule:#2A3441; --soft:#1C2530;
     --tag:#45CFA0; --tag-soft:#16352B; --prp:#E672BF; --prp-soft:#3A1C30; --late:#8FB0F0; --late-soft:#1D2A44; --gray:#7C8795;}
 }
-:root[data-theme="dark"]{color-scheme:dark;
-  --bg:#0E131A; --paper:#151C25; --ink:#E4E9EF; --muted:#9AA6B4; --rule:#2A3441; --soft:#1C2530;
-  --tag:#45CFA0; --tag-soft:#16352B; --prp:#E672BF; --prp-soft:#3A1C30; --late:#8FB0F0; --late-soft:#1D2A44; --gray:#7C8795;}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;padding-inline:16px;padding-block:0 64px}
 .wrap{max-width:980px;margin:0 auto}
@@ -64,17 +66,19 @@ footer{margin-top:52px;padding-top:16px;border-top:1px solid var(--rule);font-si
 :focus-visible{outline:2px solid var(--prp);outline-offset:2px}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
+</head>
+<body>
 
 <div class="wrap">
 <header>
   <div class="eyebrow">RetroSTC-Net · interactive lab · synaptic tagging and capture in a neural network</div>
   <h1>Can a <span class="p">later event</span> decide what a network <span class="t">remembers</span>?</h1>
-  <p class="lede">In the brain, a fresh memory is fragile. It leaves a temporary tag, and it becomes permanent only if a salient event supplies plasticity-related products while the tag is still there. This lab shows the same mechanism working inside a neural network trained with backpropagation, using results from real training runs.</p>
+  <p class="lede">In the brain, a fresh memory is fragile. It leaves a temporary tag, and it becomes permanent only if a salient event supplies plasticity-related products while the tag is still there. This lab shows a simplified version of that mechanism inside a neural network trained with backpropagation, using results from logged training runs. The timeline at the top is computed from the model's equations as an illustration.</p>
 </header>
 
 <section aria-labelledby="h-lab">
 <h2 id="h-lab">1. Move the salient event</h2>
-<p>A network learns a hard digit task (3 vs 5) weakly, for 60 steps. One salient event happens somewhere in time. After a long delay, only what was consolidated is left. Slide the event and watch the tag, the plasticity-related products and the capture.</p>
+<p>A network learns a digit task (3 vs 5) briefly, for 60 steps. One salient event happens somewhere in time. After a long delay, only what was consolidated is left. Slide the event and watch the tag, the plasticity-related products and the capture.</p>
 <div class="lab">
   <div class="panel">
     <div class="ctrl">
@@ -87,21 +91,21 @@ footer{margin-top:52px;padding-top:16px;border-top:1px solid var(--rule);font-si
   </div>
   <div class="panel stat" aria-live="polite">
     <div><div class="k">Share of task A made permanent</div><div class="big" id="kept">91%</div></div>
-    <div><div class="k">Task A accuracy after the delay</div><div class="v num" id="accA">0.96</div></div>
-    <div><div class="k">Without any event</div><div class="v num" id="accNone">0.49</div></div>
+    <div><div class="k">Task A accuracy after the delay</div><div class="v num" id="accA">0.95</div></div>
+    <div><div class="k">Without any event</div><div class="v num" id="accNone">0.61</div></div>
     <p class="note" id="explain">The event arrives while the tag is still set, so most of task A is captured.</p>
   </div>
 </div>
 <div class="panel" style="margin-top:18px">
   <div class="legend"><span><i style="border-color:var(--tag)"></i>tags + shared PRPs</span><span><i style="border-color:var(--gray);border-top-style:dashed"></i>no tags</span><span><i style="border-color:var(--prp);border-top-style:dotted"></i>PRPs per synapse</span></div>
   <div class="chart sm"><canvas id="windowChart" role="img" aria-label="Measured share of task A consolidated as a function of event time, for three model variants"></canvas></div>
-  <p class="note">Measured over 5 training runs each. Without tags there is no time limit after learning. With PRPs made only at tagged synapses, an event before learning cannot help.</p>
+  <p class="note">Measured over 5 training runs each. Without tags the window after learning stays open much longer, limited only by the decay of the labile weights. With PRPs made only at tagged synapses, an event before learning cannot help.</p>
 </div>
 </section>
 
 <section aria-labelledby="h-cross">
-<h2 id="h-cross">2. A new, surprising task rescues an older one</h2>
-<p>Now the salient event is the start of a new task B. Its onset rescues task A retroactively, but only while A's tags last. If tags belong to the weight, B's own learning re-tags the same weights and rescues A far too late. If tags belong to the change, the window is clean.</p>
+<h2 id="h-cross">2. The start of a new task rescues an older one</h2>
+<p>Now a salient event is set at the start of a new task B. Its onset rescues task A retroactively, but only while A's tags last. If tags belong to the weight, B's own learning re-tags the same weights and still rescues A long after A's own tags have faded. If tags belong to the change, the window is clean.</p>
 <div class="panel" style="margin-top:14px">
   <div class="legend"><span><i style="border-color:var(--tag)"></i>tags bound to the change</span><span><i style="border-color:var(--gray);border-top-style:dashed"></i>tags bound to the weight</span></div>
   <div class="chart sm"><canvas id="crossChart" role="img" aria-label="Share of task A consolidated by the onset of task B, as a function of the gap between A and B"></canvas></div>
@@ -110,7 +114,7 @@ footer{margin-top:52px;padding-top:16px;border-top:1px solid var(--rule);font-si
 
 <section aria-labelledby="h-why">
 <h2 id="h-why">3. Why does it remember? The network's own record</h2>
-<p>Every capture is logged: which event supplied the products, and whose learning was captured. That record is an explanation of the network's memory. The chart tests whether it is true: resetting the weights the log names should remove that memory, and only that memory.</p>
+<p>Every capture is logged: which event supplied the products, and whose learning was captured. The chart tests that record: resetting the weights the log attributes to one task lowers accuracy on that task and spares the other. Ranking weights simply by how much each task changed them gives the same result for task A, so for task A the log mainly reflects which task changed which weights.</p>
 <div class="grid2">
   <div class="panel">
     <div class="flab">Memory provenance record</div>
@@ -118,8 +122,8 @@ footer{margin-top:52px;padding-top:16px;border-top:1px solid var(--rule);font-si
   </div>
   <div class="panel">
     <div class="ctrl"><span class="seg" role="group" aria-label="Show accuracy on"><button type="button" id="showA" aria-pressed="true">Task A</button><button type="button" id="showB" aria-pressed="false">Task B</button></span></div>
-    <div class="legend"><span><i style="border-color:var(--tag)"></i>log: A</span><span><i style="border-color:var(--prp)"></i>log: B</span><span><i style="border-color:var(--tag);border-top-style:dashed"></i>Fisher: A</span><span><i style="border-color:var(--prp);border-top-style:dashed"></i>Fisher: B</span><span><i style="border-color:var(--gray);border-top-style:dotted"></i>random</span></div>
-    <div class="chart sm"><canvas id="faithChart" role="img" aria-label="Accuracy after resetting the top-ranked parameters, for rankings from the consolidation log, Fisher importance and random"></canvas></div>
+    <div class="legend"><span><i style="border-color:var(--tag)"></i>log: A</span><span><i style="border-color:var(--prp)"></i>log: B</span><span><i style="border-color:var(--tag);border-top-style:dashed"></i>Fisher: A</span><span><i style="border-color:var(--prp);border-top-style:dashed"></i>Fisher: B</span><span><i style="border-color:var(--tag);border-top-style:double;border-top-width:4px"></i>change size: A</span><span><i style="border-color:var(--prp);border-top-style:double;border-top-width:4px"></i>change size: B</span><span><i style="border-color:var(--gray);border-top-style:dotted"></i>random</span></div>
+    <div class="chart sm"><canvas id="faithChart" role="img" aria-label="Accuracy after resetting the top-ranked parameters, for rankings from the consolidation log, Fisher importance, change size and random"></canvas></div>
   </div>
 </div>
 <div class="panel" style="margin-top:18px">
@@ -131,9 +135,9 @@ footer{margin-top:52px;padding-top:16px;border-top:1px solid var(--rule);font-si
 
 <section aria-labelledby="h-cl">
 <h2 id="h-cl">4. Does it prevent forgetting?</h2>
-<p>On Split-MNIST, a standard benchmark of five digit tasks in a row, consolidation alone does not stop forgetting: consolidated weights are not protected from later learning. Using the consolidation record as the importance signal for protecting weights helps about as much as Elastic Weight Consolidation, though less than Synaptic Intelligence. The difference is that importance is chosen by salient moments after the fact, not fixed at the time of learning. When each task has its own output head, every method is close to the ceiling.</p>
+<p>On Split-MNIST, a standard benchmark of five digit tasks in a row, consolidation alone does not stop forgetting: consolidated weights are not protected from later learning. Using the consolidation record as the importance signal for protecting weights helps about as much as Elastic Weight Consolidation, though less than Synaptic Intelligence. The difference is that importance comes from capture events after learning rather than being fixed at the time of learning. The surprise detector that triggers these events fires a few times per task and does not reliably mark task changes. When each task has its own output head, every method is close to the ceiling.</p>
 <div class="tbl" style="margin-top:14px"><table id="clTable"><thead><tr><th>Method</th><th>Task-incremental</th><th>Domain-incremental</th></tr></thead><tbody></tbody></table></div>
-<p class="note" style="margin-top:8px">Average final accuracy over all five tasks, mean of 5 runs. Hyperparameters chosen on a separate run.</p>
+<p class="note" style="margin-top:8px">Average final accuracy over all five tasks, mean of 5 runs. Hyperparameters chosen on a separate seed, scored on the same test set.</p>
 </section>
 
 <section aria-labelledby="h-map">
@@ -144,13 +148,13 @@ footer{margin-top:52px;padding-top:16px;border-top:1px solid var(--rule);font-si
 <tr><td>Early-phase LTP: a fragile change that fades within hours</td><td>A labile weight component that decays with time constant τE</td></tr>
 <tr><td>Late-phase LTP: a lasting change</td><td>A consolidated weight component</td></tr>
 <tr><td>Synaptic tag</td><td>A trace of each weight's recent updates, fading with τh</td></tr>
-<tr><td>Plasticity-related products, shared across a neuron</td><td>A resource per hidden unit, fading with τp, shared by its incoming weights</td></tr>
+<tr><td>Plasticity-related products, shared across a neuron</td><td>A resource stored per unit and shared by its incoming weights, fading with τp; in this version every unit receives the same amount</td></tr>
 <tr><td>Novelty or reward</td><td>A salience signal: a pulse, or a sudden jump in training loss</td></tr>
 </tbody></table></div>
 <p style="margin-top:14px"><strong>Where the analogy breaks.</strong> Backpropagation is not how neurons learn. Time here is counted in training steps, not hours. Plasticity-related products are a single number per unit, not proteins. A hidden unit is not a neuron.</p>
 </section>
 
-<footer>RetroSTC-Net. MNIST data; small multilayer perceptrons in PyTorch; all numbers from logged training runs.</footer>
+<footer>RetroSTC-Net. MNIST data; small multilayer perceptrons in PyTorch. Measured values come from logged training runs; the timeline is an illustration computed from the model's equations.</footer>
 </div>
 
 <script>/*DATA*/</script>
@@ -248,6 +252,8 @@ const fset = key => [
   {data:D[key].log_B, borderColor:C.prp, borderWidth:2.5},
   {data:D[key].fisher_A, borderColor:C.tag, borderDash:[6,4], borderWidth:2},
   {data:D[key].fisher_B, borderColor:C.prp, borderDash:[6,4], borderWidth:2},
+  {data:D[key].change_A, borderColor:C.tag, borderDash:[10,3,2,3], borderWidth:1.5},
+  {data:D[key].change_B, borderColor:C.prp, borderDash:[10,3,2,3], borderWidth:1.5},
   {data:D[key].random, borderColor:C.gray, borderDash:[2,3], borderWidth:2}];
 const fc = new Chart(document.getElementById('faithChart'), {type:'line', data:{labels:lv, datasets:fset('faith')},
   options:{...base, scales:{x:{title:{display:true,text:'parameters reset to pre-learning values'}}, y:{min:0.5,max:1,title:{display:true,text:'accuracy'}}}}});
@@ -281,3 +287,6 @@ Object.entries(names).forEach(([k,n])=>{
 });
 })();
 </script>
+
+</body>
+</html>
